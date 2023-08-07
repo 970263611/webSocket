@@ -1,8 +1,8 @@
 package com.example.demo.webSocket.controller;
 
+import com.example.demo.utils.JSON;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
@@ -19,11 +19,11 @@ public class ChatController {
 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
-    public Map test(StompHeaderAccessor headerAccessor, Map map) {
-        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-        System.out.println(sessionAttributes);
-        return new HashMap() {{
+    public String test(StompHeaderAccessor headerAccessor, Map map) {
+        System.out.println(headerAccessor.getUser().getName());
+        HashMap name = new HashMap() {{
             put("Hello, ", HtmlUtils.htmlEscape((String) map.get("name")) + "!");
         }};
+        return JSON.toJSONString(name);
     }
 }

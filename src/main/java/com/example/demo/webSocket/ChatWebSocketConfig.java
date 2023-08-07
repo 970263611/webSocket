@@ -1,7 +1,9 @@
 package com.example.demo.webSocket;
 
 import com.example.demo.webSocket.auth.Authentication;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -17,8 +19,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
-
-import java.util.HashMap;
 
 /**
  * @author dahua
@@ -62,12 +62,15 @@ public class ChatWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     if (!authentication.check(token)) {
                         return new ErrorMessage(new IllegalArgumentException());
                     }
-                    accessor.setSessionAttributes(new HashMap() {{
-                        put(WebSocketConst.WEBSOCKET_TOKEN, token);
-                    }});
+                    accessor.setUser(() -> token);
                 }
                 return message;
             }
         });
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }
